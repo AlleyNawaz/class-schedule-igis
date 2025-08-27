@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Timetable</title>
+    <!-- Use the Inter font from Google Fonts for a clean, modern look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Include Tailwind CSS for all styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a202c; /* Dark background color */
+            color: #e2e8f0; /* Light text color */
+        }
+        .table-cell-custom {
+            word-break: break-word; /* Prevents long words from overflowing */
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 flex flex-col items-center justify-center p-4 min-h-screen">
+
+    <main class="w-full max-w-7xl mx-auto my-8">
+
+        <!-- Navigation and Title section with modern styling -->
+        <header class="text-center mb-10">
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-white mb-2">
+                Class Timetable
+            </h1>
+            <p class="text-lg sm:text-xl text-gray-400">
+                Weekly schedule for academic year (Week 1).
+            </p>
+            <nav class="mt-6 flex justify-center space-x-4">
+                <button id="today-btn" class="px-6 py-2 rounded-full font-medium text-white transition-colors duration-200 bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900">Today</button>
+                <button id="week-btn" class="px-6 py-2 rounded-full font-medium text-gray-400 transition-colors duration-200 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900">This Week</button>
+            </nav>
+        </header>
+
+        <!-- Timetable container with a sleek, dark card-like design -->
+        <div id="timetable-container" class="bg-gray-800 rounded-2xl shadow-xl overflow-hidden p-6 md:p-8">
+            <!-- Timetable content will be dynamically loaded here -->
+        </div>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const todayBtn = document.getElementById('today-btn');
+            const weekBtn = document.getElementById('week-btn');
+            const timetableContainer = document.getElementById('timetable-container');
+
+            const timetableData = {
+                '9:00 am - 10:00 am': ['','LAB - Soil Mechanics','','','Object Oriented Programming'],
+                '10:00 am - 11:00 am': ['Linear Algebra','LAB - Soil Mechanics','HoD Disposal','','Object Oriented Programming'],
+                '11:00 am - 12:00 pm': ['Linear Algebra','LAB - Soil Mechanics','Object Oriented Programming','Soil Mechanics','Linear Algebra'],
+                '12:00 pm - 1:00 pm': ['SAS Advisory','Digital Mapping & Image Processing','Digital Mapping & Image Processing','Soil Mechanics',''],
+                '1:00 pm - 2:00 pm': ['Lunch & Prayer Break','Lunch & Prayer Break','Lunch & Prayer Break','Lunch & Prayer Break','Lunch & Prayer Break'],
+                '2:00 pm - 3:00 pm': ['Occupational Health and Safety','LAB - Digital Mapping & Image Processing','LAB - Object Oriented Programming','Professional Ethics',''],
+                '3:00 pm - 4:00 pm': ['','LAB - Digital Mapping & Image Processing','LAB - Object Oriented Programming','Professional Ethics',''],
+                '4:00 pm - 5:00 pm': ['','LAB - Digital Mapping & Image Processing','LAB - Object Oriented Programming','',''],
+            };
+
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+            const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+            const currentDayIndex = today === 0 || today === 6 ? -1 : today - 1; // Adjust for 0-indexed array
+
+            // Function to render the full weekly timetable
+            const renderWeeklyTimetable = () => {
+                let htmlContent = `
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-700">
+                                    <th class="py-3 px-4 text-sm font-semibold text-gray-300 rounded-tl-xl border-b border-gray-600 w-1/6">Time Slot</th>
+                                    ${days.map(day => `<th class="py-3 px-4 text-sm font-semibold text-gray-300 border-b border-gray-600">${day}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${Object.keys(timetableData).map(timeSlot => `
+                                    <tr class="hover:bg-gray-700 transition-colors duration-200">
+                                        <td class="py-4 px-4 text-sm font-medium border-b border-gray-700">${timeSlot}</td>
+                                        ${timetableData[timeSlot].map(cell => `
+                                            <td class="py-4 px-4 text-sm border-b border-gray-700 table-cell-custom ${cell.includes('Break') ? 'font-medium text-gray-400' : 'font-semibold'}">
+                                                ${cell}
+                                            </td>
+                                        `).join('')}
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                timetableContainer.innerHTML = htmlContent;
+                weekBtn.classList.add('bg-gray-700', 'text-white');
+                todayBtn.classList.remove('bg-gray-700', 'text-white');
+                weekBtn.classList.remove('text-gray-400', 'hover:bg-gray-800');
+                todayBtn.classList.add('text-gray-400', 'hover:bg-gray-800');
+            };
+
+            // Function to render today's timetable
+            const renderTodayTimetable = () => {
+                if (currentDayIndex === -1) {
+                    timetableContainer.innerHTML = `
+                        <div class="text-center py-10">
+                            <p class="text-xl text-gray-400">No classes today. Enjoy your weekend!</p>
+                        </div>
+                    `;
+                } else {
+                    let htmlContent = `
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-700">
+                                        <th class="py-3 px-4 text-sm font-semibold text-gray-300 rounded-tl-xl border-b border-gray-600 w-1/4">Time Slot</th>
+                                        <th class="py-3 px-4 text-sm font-semibold text-gray-300 rounded-tr-xl border-b border-gray-600 w-3/4">${days[currentDayIndex]}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${Object.keys(timetableData).map(timeSlot => `
+                                        <tr class="hover:bg-gray-700 transition-colors duration-200">
+                                            <td class="py-4 px-4 text-sm font-medium border-b border-gray-700">${timeSlot}</td>
+                                            <td class="py-4 px-4 text-sm border-b border-gray-700 table-cell-custom ${timetableData[timeSlot][currentDayIndex].includes('Break') ? 'font-medium text-gray-400' : 'font-semibold'}">
+                                                ${timetableData[timeSlot][currentDayIndex]}
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    timetableContainer.innerHTML = htmlContent;
+                }
+                todayBtn.classList.add('bg-gray-700', 'text-white');
+                weekBtn.classList.remove('bg-gray-700', 'text-white');
+                todayBtn.classList.remove('text-gray-400', 'hover:bg-gray-800');
+                weekBtn.classList.add('text-gray-400', 'hover:bg-gray-800');
+            };
+
+            // Event listeners for the navigation buttons
+            todayBtn.addEventListener('click', renderTodayTimetable);
+            weekBtn.addEventListener('click', renderWeeklyTimetable);
+
+            // Initial rendering based on the current day
+            renderWeeklyTimetable();
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('view') === 'today' || currentDayIndex !== -1) {
+                renderTodayTimetable();
+            } else {
+                renderWeeklyTimetable();
+            }
+        });
+    </script>
+
+</body>
+</html>
