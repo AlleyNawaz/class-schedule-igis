@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Class Timetable</title>
-    <!-- Use the Inter font from Google Fonts for a clean, modern look -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Include Tailwind CSS for all styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -14,8 +12,29 @@
             background-color: #1a202c; /* Dark background color */
             color: #e2e8f0; /* Light text color */
         }
+        /* Custom styles for better mobile handling */
         .table-cell-custom {
-            word-break: break-word; /* Prevents long words from overflowing */
+            word-break: break-word; /* Allows words to break and wrap */
+            overflow-wrap: break-word; /* Ensures long words don't overflow */
+        }
+
+        /* Adjust padding for smaller screens */
+        @media (max-width: 640px) { /* Tailwind's 'sm' breakpoint */
+            .table-auto-sm .py-4 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+            .table-auto-sm .px-4 { padding-left: 0.5rem; padding-right: 0.5rem; }
+            .table-auto-sm .text-sm { font-size: 0.75rem; } /* Smaller font for mobile */
+            .table-auto-sm .text-xs { font-size: 0.65rem; } /* Even smaller for time slots if needed */
+
+            /* Specific width adjustments for time slot column on small screens */
+            .time-slot-col {
+                width: 90px; /* Fixed width for time slots */
+                min-width: 90px;
+            }
+            /* Flexing other columns to fill remaining space */
+            .day-col {
+                width: 120px; /* Adjust as needed */
+                min-width: 120px;
+            }
         }
     </style>
 </head>
@@ -23,7 +42,6 @@
 
     <main class="w-full max-w-7xl mx-auto my-8">
 
-        <!-- Navigation and Title section with modern styling -->
         <header class="text-center mb-10">
             <h1 class="text-4xl sm:text-5xl font-extrabold text-white mb-2">
                 Class Timetable
@@ -37,10 +55,8 @@
             </nav>
         </header>
 
-        <!-- Timetable container with a sleek, dark card-like design -->
         <div id="timetable-container" class="bg-gray-800 rounded-2xl shadow-xl overflow-hidden p-6 md:p-8">
-            <!-- Timetable content will be dynamically loaded here -->
-        </div>
+            </div>
 
     </main>
 
@@ -51,14 +67,14 @@
             const timetableContainer = document.getElementById('timetable-container');
 
             const timetableData = {
-                '9:00 am - 10:00 am': ['','LAB - Soil Mechanics','','','Object Oriented Programming'],
-                '10:00 am - 11:00 am': ['Linear Algebra','LAB - Soil Mechanics','HoD Disposal','','Object Oriented Programming'],
-                '11:00 am - 12:00 pm': ['Linear Algebra','LAB - Soil Mechanics','Object Oriented Programming','Soil Mechanics','Linear Algebra'],
-                '12:00 pm - 1:00 pm': ['SAS Advisory','Digital Mapping & Image Processing','Digital Mapping & Image Processing','Soil Mechanics',''],
-                '1:00 pm - 2:00 pm': ['Lunch & Prayer Break','Lunch & Prayer Break','Lunch & Prayer Break','Lunch & Prayer Break','Lunch & Prayer Break'],
-                '2:00 pm - 3:00 pm': ['Occupational Health and Safety','LAB - Digital Mapping & Image Processing','LAB - Object Oriented Programming','Professional Ethics',''],
-                '3:00 pm - 4:00 pm': ['','LAB - Digital Mapping & Image Processing','LAB - Object Oriented Programming','Professional Ethics',''],
-                '4:00 pm - 5:00 pm': ['','LAB - Digital Mapping & Image Processing','LAB - Object Oriented Programming','',''],
+                '9:00 - 10:00 am': ['','LAB - Soil Mechanics','','','Object Oriented Programming'],
+                '10:00 - 11:00 am': ['Linear Algebra','LAB - Soil Mechanics','HoD Disposal','','Object Oriented Programming'],
+                '11:00 - 12:00 pm': ['Linear Algebra','LAB - Soil Mechanics','Object Oriented Programming','Soil Mechanics','Linear Algebra'],
+                '12:00 - 1:00 pm': ['SAS Advisory','Digital Mapping & Image Processing','Digital Mapping & Image Processing','Soil Mechanics',''],
+                '1:00 - 2:00 pm': ['Lunch & Prayer Break','Lunch & Prayer Break','Lunch & Prayer Break','Lunch & Prayer Break','Lunch & Prayer Break'],
+                '2:00 - 3:00 pm': ['Occupational Health and Safety','LAB - Digital Mapping & Image Processing','LAB - Object Oriented Programming','Professional Ethics',''],
+                '3:00 - 4:00 pm': ['','LAB - Digital Mapping & Image Processing','LAB - Object Oriented Programming','Professional Ethics',''],
+                '4:00 - 5:00 pm': ['','LAB - Digital Mapping & Image Processing','LAB - Object Oriented Programming','',''],
             };
 
             const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -69,19 +85,19 @@
             const renderWeeklyTimetable = () => {
                 let htmlContent = `
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
+                        <table class="w-full text-left border-collapse table-auto-sm">
                             <thead>
                                 <tr class="bg-gray-700">
-                                    <th class="py-3 px-4 text-sm font-semibold text-gray-300 rounded-tl-xl border-b border-gray-600 w-1/6">Time Slot</th>
-                                    ${days.map(day => `<th class="py-3 px-4 text-sm font-semibold text-gray-300 border-b border-gray-600">${day}</th>`).join('')}
+                                    <th class="py-3 px-4 text-sm font-semibold text-gray-300 rounded-tl-xl border-b border-gray-600 time-slot-col">Time Slot</th>
+                                    ${days.map(day => `<th class="py-3 px-4 text-sm font-semibold text-gray-300 border-b border-gray-600 day-col">${day}</th>`).join('')}
                                 </tr>
                             </thead>
                             <tbody>
                                 ${Object.keys(timetableData).map(timeSlot => `
                                     <tr class="hover:bg-gray-700 transition-colors duration-200">
-                                        <td class="py-4 px-4 text-sm font-medium border-b border-gray-700">${timeSlot}</td>
+                                        <td class="py-4 px-4 text-sm font-medium border-b border-gray-700 time-slot-col">${timeSlot}</td>
                                         ${timetableData[timeSlot].map(cell => `
-                                            <td class="py-4 px-4 text-sm border-b border-gray-700 table-cell-custom ${cell.includes('Break') ? 'font-medium text-gray-400' : 'font-semibold'}">
+                                            <td class="py-4 px-4 text-sm border-b border-gray-700 table-cell-custom day-col ${cell.includes('Break') ? 'font-medium text-gray-400' : 'font-semibold'}">
                                                 ${cell}
                                             </td>
                                         `).join('')}
@@ -109,18 +125,18 @@
                 } else {
                     let htmlContent = `
                         <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse">
+                            <table class="w-full text-left border-collapse table-auto-sm">
                                 <thead>
                                     <tr class="bg-gray-700">
-                                        <th class="py-3 px-4 text-sm font-semibold text-gray-300 rounded-tl-xl border-b border-gray-600 w-1/4">Time Slot</th>
-                                        <th class="py-3 px-4 text-sm font-semibold text-gray-300 rounded-tr-xl border-b border-gray-600 w-3/4">${days[currentDayIndex]}</th>
+                                        <th class="py-3 px-4 text-sm font-semibold text-gray-300 rounded-tl-xl border-b border-gray-600 time-slot-col">Time Slot</th>
+                                        <th class="py-3 px-4 text-sm font-semibold text-gray-300 rounded-tr-xl border-b border-gray-600 day-col">${days[currentDayIndex]}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     ${Object.keys(timetableData).map(timeSlot => `
                                         <tr class="hover:bg-gray-700 transition-colors duration-200">
-                                            <td class="py-4 px-4 text-sm font-medium border-b border-gray-700">${timeSlot}</td>
-                                            <td class="py-4 px-4 text-sm border-b border-gray-700 table-cell-custom ${timetableData[timeSlot][currentDayIndex].includes('Break') ? 'font-medium text-gray-400' : 'font-semibold'}">
+                                            <td class="py-4 px-4 text-sm font-medium border-b border-gray-700 time-slot-col">${timeSlot}</td>
+                                            <td class="py-4 px-4 text-sm border-b border-gray-700 table-cell-custom day-col ${timetableData[timeSlot][currentDayIndex].includes('Break') ? 'font-medium text-gray-400' : 'font-semibold'}">
                                                 ${timetableData[timeSlot][currentDayIndex]}
                                             </td>
                                         </tr>
